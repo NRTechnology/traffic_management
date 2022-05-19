@@ -12,9 +12,26 @@ output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # Loading image
-img = cv2.imread("room_ser.jpg")
-img = cv2.resize(img, None, fx=0.3, fy=0.3)
+img = cv2.imread("img\mobil.jpg")
+# img = cv2.resize(img, None, fx=0.3, fy=0.3)
+first_segment = 250
+last_segment = 600
+line_segment = int((600-250)/3)
+
+scale_percent = (720 * 100) / img.shape[0]  # percent of original size
+width = int(img.shape[1] * scale_percent / 100)
+height = int(img.shape[0] * scale_percent / 100)
+dim = (width, height)
+
+img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 height, width, channels = img.shape
+
+color = (0, 255, 0)
+thickness = 2
+cv2.line(img, (0, first_segment), (width, first_segment), color, thickness)
+cv2.line(img, (0, first_segment+line_segment), (width, first_segment+line_segment), color, thickness)
+cv2.line(img, (0, first_segment+line_segment*2), (width, first_segment+line_segment*2), color, thickness)
+cv2.line(img, (0, last_segment), (width, last_segment), color, thickness)
 
 # Detecting objects
 blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
@@ -46,7 +63,7 @@ for out in outs:
             class_ids.append(class_id)
 
 indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-print(indexes)
+
 font = cv2.FONT_HERSHEY_PLAIN
 for i in range(len(boxes)):
     if i in indexes:
