@@ -14,9 +14,15 @@ colors = np.random.uniform(0, 255, size=(len(classes), 3))
 # Loading image
 img = cv2.imread("img\mobil.jpg")
 # img = cv2.resize(img, None, fx=0.3, fy=0.3)
+vehicle = {'car', 'bicycle', 'motorbike', 'bus', 'truck'}
+vehicle_count = {
+    'segment1': 0,
+    'segment2': 0,
+    'segment3': 0,
+}
 first_segment = 250
 last_segment = 600
-line_segment = int((600-250)/3)
+line_segment = int((600 - 250) / 3)
 
 scale_percent = (720 * 100) / img.shape[0]  # percent of original size
 width = int(img.shape[1] * scale_percent / 100)
@@ -29,8 +35,8 @@ height, width, channels = img.shape
 color = (0, 255, 0)
 thickness = 2
 cv2.line(img, (0, first_segment), (width, first_segment), color, thickness)
-cv2.line(img, (0, first_segment+line_segment), (width, first_segment+line_segment), color, thickness)
-cv2.line(img, (0, first_segment+line_segment*2), (width, first_segment+line_segment*2), color, thickness)
+cv2.line(img, (0, first_segment + line_segment), (width, first_segment + line_segment), color, thickness)
+cv2.line(img, (0, first_segment + line_segment * 2), (width, first_segment + line_segment * 2), color, thickness)
 cv2.line(img, (0, last_segment), (width, last_segment), color, thickness)
 
 # Detecting objects
@@ -69,10 +75,14 @@ for i in range(len(boxes)):
     if i in indexes:
         x, y, w, h = boxes[i]
         label = str(classes[class_ids[i]])
+        if label in vehicle:
+            # print(label)
+            vehicle_count += 1
         color = colors[i]
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        # cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
+        cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
 
+print(vehicle_count)
 cv2.imshow("Image", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
