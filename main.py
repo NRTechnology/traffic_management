@@ -16,13 +16,13 @@ img = cv2.imread("img\mobil.jpg")
 # img = cv2.resize(img, None, fx=0.3, fy=0.3)
 vehicle = {'car', 'bicycle', 'motorbike', 'bus', 'truck'}
 vehicle_count = {
-    'segment1': 0,
-    'segment2': 0,
-    'segment3': 0,
+    'car': 0,
+    'bicycle': 0,
+    'motorbike': 0,
+    'bus': 0,
+    'truck': 0,
 }
-first_segment = 250
-last_segment = 600
-line_segment = int((600 - 250) / 3)
+imaginer_line = 350
 
 scale_percent = (720 * 100) / img.shape[0]  # percent of original size
 width = int(img.shape[1] * scale_percent / 100)
@@ -34,10 +34,7 @@ height, width, channels = img.shape
 
 color = (0, 255, 0)
 thickness = 2
-cv2.line(img, (0, first_segment), (width, first_segment), color, thickness)
-cv2.line(img, (0, first_segment + line_segment), (width, first_segment + line_segment), color, thickness)
-cv2.line(img, (0, first_segment + line_segment * 2), (width, first_segment + line_segment * 2), color, thickness)
-cv2.line(img, (0, last_segment), (width, last_segment), color, thickness)
+cv2.line(img, (0, imaginer_line), (width, imaginer_line), color, thickness)
 
 # Detecting objects
 blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
@@ -77,10 +74,19 @@ for i in range(len(boxes)):
         label = str(classes[class_ids[i]])
         if label in vehicle:
             # print(label)
-            vehicle_count += 1
+            if label == 'car':
+                vehicle_count['car'] += 1
+            elif label == 'bicycle':
+                vehicle_count['bicycle'] += 1
+            elif label == 'motorbike':
+                vehicle_count['motorbike'] += 1
+            elif label == 'bus':
+                vehicle_count['bus'] += 1
+            else:
+                vehicle_count['truck'] += 1
         color = colors[i]
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
+        # cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
 
 print(vehicle_count)
 cv2.imshow("Image", img)
